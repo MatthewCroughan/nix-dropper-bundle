@@ -10,17 +10,18 @@ systems in unconventional ways.
 To create a perl memfd_create bundle that will run on any machine that has perl, you
 can follow the example below, replacing `hello` with a program you want to use:
 
-1. Create the `memfd_create` bundle
+1. Create the `memfd_create` bundle, ensure your package is statically linked by
+   using `pkgsStatic`.
 
    ```
-   nix bundle --bundler github:matthewcroughan/nix-dropper-bundle#memfd_create github:nixos/nixpkgs#hello
+   nix bundle --bundler github:matthewcroughan/nix-dropper-bundle#memfd_create github:nixos/nixpkgs#pkgsStatic.hello
    ```
 2. See that it has made a result in the current directory
 
    ```
    user: matthew ~
    ❯ ls -lah ./hello-2.12.1-memfd_create-dropper
-   lrwxrwxrwx 1 matthew users 72 Aug  8 04:44 ./hello-2.12.1-memfd_create-dropper -> /nix/store/46l1707bxmm13ixvpfmz9z8r7w5v5mxi-hello-2.12.1-memfd_create-dropper
+   lrwxrwxrwx 1 matthew users 72 Aug  8 04:44 ./hello-static-x86_64-unknown-linux-musl-2.12-memfd_create-dropper -> /nix/store/46l1707bxmm13ixvpfmz9z8r7w5v5mxi-hello-2.12.1-memfd_create-dropper
    ```
 3. Run it with `perl`
 
@@ -43,9 +44,8 @@ interpreter, without the need to store files on disk, or set the executable bit
 on a file with `chmod +x`
 
 **Note:** this method requires statically compiling the requested derivation.
-This means a lot of software will fail to build when bundling, since some
-software will not statically link for complex reasons. Bundling with
-memfd_create may therefore not be possible for some software.
+Since some software will fail to statically link for complex reasons, bundling
+with memfd_create may not be possible.
 
 #### References
 - https://man7.org/linux/man-pages/man2/memfd_create.2.html

@@ -1,7 +1,13 @@
 { drv, pkgs }:
 let
   exe = pkgs.lib.getExe staticDrv;
-  staticDrv = drv.override { stdenv = pkgs.pkgsStatic.stdenv; };
+  staticDrv =
+    if drv.stdenv.hostPlatform.isStatic == false
+      then throw ''
+        The package "${drv.name}" needs to be static, try pkgsStatic
+        Example: nix bundle --bundler github:matthewcroughan/nix-dropper-bundle#memfd_create nixpkgs#pkgsStatic.hello"
+      ''
+    else drv;
   name = "${drv.name}-memfd_create-dropper";
 in
 pkgs.runCommand "${name}" {} ''
